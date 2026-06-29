@@ -1,575 +1,361 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Vicemeair shops</title>
-
 <style>
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth;}
+body{font-family:Arial,sans-serif;background:#0a0a0a;color:white;overflow-x:hidden;}
+#loader{position:fixed;width:100%;height:100%;background:#0a0a0a;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;font-size:48px;font-weight:900;letter-spacing:6px;z-index:9999;animation:fadeOut 0.6s forwards;animation-delay:2.4s;}
+#loader .loader-bar{width:200px;height:3px;background:#222;border-radius:3px;overflow:hidden;}
+#loader .loader-fill{height:100%;width:0%;background:#AFFF00;border-radius:3px;animation:loadFill 2.2s ease forwards;}
+@keyframes loadFill{to{width:100%;}}
+@keyframes fadeOut{to{opacity:0;visibility:hidden;}}
+header{position:fixed;top:0;left:0;width:100%;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);z-index:1000;border-bottom:1px solid #1a1a1a;transition:padding 0.3s;}
+header.scrolled{padding:10px 40px;}
+.logo img{height:65px;transition:height 0.3s;}
+header.scrolled .logo img{height:50px;}
+nav{display:flex;gap:30px;align-items:center;}
+nav a{color:#aaa;text-decoration:none;font-size:15px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:0.25s;position:relative;}
+nav a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:#AFFF00;transition:0.25s;}
+nav a:hover{color:white;}
+nav a:hover::after{width:100%;}
+.menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:5px;}
+.menu-btn span{display:block;width:24px;height:2px;background:white;border-radius:2px;transition:0.3s;}
+.menu-btn.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+.menu-btn.open span:nth-child(2){opacity:0;}
+.menu-btn.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
+#mobile-nav{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,10,10,0.98);backdrop-filter:blur(20px);z-index:999;flex-direction:column;justify-content:center;align-items:center;gap:40px;}
+#mobile-nav.open{display:flex;}
+#mobile-nav a{color:white;text-decoration:none;font-size:36px;font-weight:900;letter-spacing:4px;text-transform:uppercase;transition:0.2s;}
+#mobile-nav a:hover{color:#AFFF00;}
+.hero{position:relative;height:100vh;overflow:hidden;display:flex;justify-content:center;align-items:center;text-align:center;}
+.hero video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.3;}
+.overlay{position:absolute;width:100%;height:100%;background:linear-gradient(to bottom,rgba(10,10,10,0.2) 0%,rgba(10,10,10,0.8) 100%);}
+.hero-content{position:relative;z-index:2;animation:fadeUp 1.2s ease 2.8s both;}
+.hero-tag{display:inline-block;font-size:13px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#AFFF00;border:1px solid #AFFF00;padding:6px 16px;border-radius:100px;margin-bottom:24px;}
+.hero h1{font-size:96px;font-weight:900;letter-spacing:-2px;line-height:0.9;margin-bottom:20px;}
+.hero h1 span{color:#AFFF00;}
+.hero p{font-size:20px;color:#888;margin-bottom:36px;letter-spacing:2px;text-transform:uppercase;}
+.btn{background:#AFFF00;color:black;padding:16px 36px;border-radius:100px;text-decoration:none;font-weight:800;font-size:15px;letter-spacing:1px;display:inline-block;transition:0.25s;}
+.btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(175,255,0,0.35);}
+.scroll-hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:#444;font-size:12px;letter-spacing:2px;text-transform:uppercase;animation:bounce 2s infinite;}
+.scroll-hint::before{content:'';width:1px;height:40px;background:linear-gradient(to bottom,transparent,#444);}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(6px);}}
+.section-title{text-align:center;font-size:13px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:#AFFF00;margin-top:110px;margin-bottom:12px;}
+.section-heading{text-align:center;font-size:46px;font-weight:900;letter-spacing:-1px;margin-bottom:60px;}
+.soldout-banner{max-width:700px;margin:0 auto 60px;background:#111;border:1px solid #2a2a2a;border-left:3px solid #ff4d4d;border-radius:12px;padding:20px 28px;display:flex;align-items:center;gap:16px;font-size:14px;color:#888;}
+.soldout-banner .dot{width:8px;height:8px;background:#ff4d4d;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px #ff4d4d;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.soldout-banner strong{color:white;}
+.products{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;padding:0 20px 20px;}
+.card{background:#111;width:280px;border-radius:20px;overflow:hidden;border:1px solid #1e1e1e;transition:0.35s;position:relative;}
+.card:hover{transform:translateY(-8px);border-color:#2a2a2a;box-shadow:0 20px 60px rgba(0,0,0,0.6);}
+.card.soldout{opacity:0.75;}
+.card.soldout:hover{transform:translateY(-4px);}
+.card-img-wrap{position:relative;width:100%;height:280px;overflow:hidden;}
+.card img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s;}
+.card:hover img{transform:scale(1.04);}
+.soldout-overlay{position:absolute;inset:0;background:rgba(10,10,10,0.55);display:flex;justify-content:center;align-items:center;}
+.soldout-badge{background:#0a0a0a;border:1px solid #333;color:#ff4d4d;font-size:12px;font-weight:800;letter-spacing:3px;padding:8px 20px;border-radius:100px;text-transform:uppercase;}
+.card-content{padding:22px 22px 26px;}
+.card-content h2{font-size:16px;font-weight:700;margin-bottom:8px;line-height:1.3;}
+.price{font-size:22px;font-weight:900;color:#AFFF00;margin-bottom:6px;}
+.card-sub{font-size:13px;color:#555;margin-bottom:16px;line-height:1.5;}
+.card-sub.success-note{color:#AFFF00;opacity:0.8;}
+.btn-soldout{background:#1a1a1a;color:#444;padding:12px 24px;border-radius:100px;font-weight:800;font-size:13px;letter-spacing:1px;display:inline-block;cursor:not-allowed;text-decoration:none;}
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-scroll-behavior:smooth;
-}
+/* NOTIFY — vrai formulaire Formspree */
+.notify-wrap{margin-top:12px;display:flex;gap:8px;}
+.notify-wrap input[type="email"]{flex:1;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:100px;padding:10px 16px;color:white;font-size:13px;outline:none;transition:0.2s;}
+.notify-wrap input[type="email"]:focus{border-color:#AFFF00;}
+.notify-wrap input[type="email"]::placeholder{color:#444;}
+.notify-wrap button[type="submit"]{background:#AFFF00;color:black;border:none;border-radius:100px;padding:10px 16px;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap;transition:0.2s;}
+.notify-wrap button[type="submit"]:hover{transform:scale(1.04);}
+.notify-wrap button[type="submit"]:disabled{background:#1a1a1a;color:#AFFF00;border:1px solid #AFFF00;cursor:default;transform:none;}
 
-body{
-font-family:Arial,sans-serif;
-background:black;
-color:white;
-overflow-x:hidden;
-}
-
-/* LOADER */
-
-#loader{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:50px;
-font-weight:bold;
-z-index:9999;
-animation:fadeOut 2s forwards;
-animation-delay:2s;
-}
-
-@keyframes fadeOut{
-to{
-opacity:0;
-visibility:hidden;
-}
-}
-
-/* HEADER */
-
-header{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-padding:20px 40px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:rgba(0,0,0,0.8);
-backdrop-filter:blur(10px);
-z-index:1000;
-border-bottom:1px solid #222;
-}
-
-.logo img{
-height:70px;
-}
-
-nav{
-display:flex;
-gap:25px;
-}
-
-nav a{
-color:white;
-text-decoration:none;
-font-size:18px;
-transition:0.3s;
-}
-
-nav a:hover{
-color:#AFFF00;
-}
-
-/* HERO VIDEO */
-
-.hero{
-position:relative;
-height:100vh;
-overflow:hidden;
-display:flex;
-justify-content:center;
-align-items:center;
-text-align:center;
-}
-
-.hero video{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-object-fit:cover;
-opacity:0.35;
-}
-
-.overlay{
-position:absolute;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.5);
-}
-
-.hero-content{
-position:relative;
-z-index:2;
-animation:fadeUp 1.5s ease;
-}
-
-.hero h1{
-font-size:90px;
-margin-bottom:20px;
-}
-
-.hero p{
-font-size:24px;
-color:#ccc;
-margin-bottom:30px;
-}
-
-.btn{
-background:#AFFF00;
-color:black;
-padding:15px 30px;
-border-radius:12px;
-text-decoration:none;
-font-weight:bold;
-display:inline-block;
-transition:0.3s;
-}
-
-.btn:hover{
-transform:scale(1.08);
-}
-
-/* TITRES */
-
-.section-title{
-text-align:center;
-font-size:50px;
-margin-top:100px;
-margin-bottom:50px;
-}
-
-/* SHOP */
-
-.products{
-display:flex;
-justify-content:center;
-gap:30px;
-flex-wrap:wrap;
-padding:20px;
-}
-
-.card{
-background:#111;
-width:300px;
-border-radius:20px;
-overflow:hidden;
-border:1px solid #222;
-transition:0.4s;
-}
-
-.card:hover{
-transform:translateY(-10px);
-box-shadow:0 0 20px rgba(175,255,0,0.3);
-}
-
-.card img{
-width:100%;
-height:300px;
-object-fit:cover;
-}
-
-.card-content{
-padding:20px;
-text-align:center;
-}
-
-.price{
-font-size:24px;
-color:#AFFF00;
-margin-bottom:10px;
-}
-
-.stock{
-color:#ff4d4d;
-margin-bottom:15px;
-font-size:14px;
-}
-
-/* DROP */
-
-.drop-box{
-max-width:800px;
-margin:auto;
-background:#111;
-padding:40px;
-border-radius:20px;
-border:1px solid #222;
-text-align:center;
-}
-
-/* TEAM */
-
-.team{
-padding:80px 20px;
-}
-
-.team-box{
-max-width:900px;
-margin:auto;
-background:#111;
-padding:40px;
-border-radius:20px;
-border:1px solid #222;
-text-align:center;
-}
-
-.riders{
-display:flex;
-justify-content:center;
-gap:30px;
-flex-wrap:wrap;
-margin-top:40px;
-}
-
-.rider{
-background:#181818;
-padding:25px;
-border-radius:20px;
-width:220px;
-border:1px solid #222;
-transition:0.3s;
-}
-
-.rider:hover{
-transform:translateY(-8px);
-}
-
-.rider h3{
-color:#AFFF00;
-margin-bottom:10px;
-}
-
-/* FOOTER */
-
-footer{
-margin-top:80px;
-padding:40px;
-text-align:center;
-color:gray;
-border-top:1px solid #222;
-}
-
-/* MOBILE */
-
-.menu-btn{
-display:none;
-font-size:30px;
-color:white;
-}
-
+.drop-section{padding:0 20px;}
+.drop-box{max-width:780px;margin:0 auto;background:#111;border:1px solid #1e1e1e;border-radius:24px;padding:60px 50px;text-align:center;position:relative;overflow:hidden;}
+.drop-box::before{content:'GERLAND';position:absolute;font-size:120px;font-weight:900;color:#1a1a1a;top:50%;left:50%;transform:translate(-50%,-50%);letter-spacing:-2px;pointer-events:none;white-space:nowrap;}
+.drop-box h3{font-size:28px;font-weight:900;margin-bottom:12px;position:relative;}
+.drop-box p{color:#666;position:relative;margin-bottom:8px;}
+.drop-tags{display:flex;justify-content:center;gap:10px;margin-top:24px;position:relative;}
+.drop-tag{background:#1a1a1a;border:1px solid #2a2a2a;padding:8px 20px;border-radius:100px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#aaa;}
+.team-section{padding:0 20px 20px;}
+.team-box{max-width:920px;margin:0 auto;background:#111;border:1px solid #1e1e1e;border-radius:24px;padding:50px 40px;text-align:center;}
+.riders{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:40px;}
+.rider{background:#161616;border:1px solid #1e1e1e;padding:28px 20px;border-radius:16px;width:190px;transition:0.3s;position:relative;overflow:hidden;}
+.rider::before{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:#AFFF00;transform:scaleX(0);transform-origin:left;transition:0.3s;}
+.rider:hover{transform:translateY(-6px);border-color:#2a2a2a;}
+.rider:hover::before{transform:scaleX(1);}
+.rider-avatar{width:52px;height:52px;border-radius:50%;background:#1e1e1e;border:2px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#AFFF00;margin:0 auto 14px;}
+.rider h3{color:white;font-size:16px;margin-bottom:6px;}
+.rider p{color:#555;font-size:13px;}
+.community-box{max-width:920px;margin:0 auto;background:#0e130a;border:1px solid #1e2a10;border-radius:24px;padding:60px 40px;text-align:center;}
+.community-box h3{font-size:28px;font-weight:900;margin-bottom:12px;}
+.community-box p{color:#666;max-width:500px;margin:0 auto 30px;line-height:1.7;}
+footer{margin-top:100px;padding:40px;text-align:center;color:#333;border-top:1px solid #1a1a1a;font-size:13px;letter-spacing:2px;}
+footer span{color:#555;}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:none;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
 @media(max-width:700px){
-
-nav{
-display:none;
+  nav{display:none;}
+  .menu-btn{display:flex;}
+  header{padding:14px 20px;}
+  .hero h1{font-size:56px;}
+  .hero p{font-size:15px;}
+  .section-heading{font-size:32px;}
+  .logo img{height:52px;}
+  .drop-box{padding:40px 24px;}
+  .drop-box::before{font-size:64px;}
+  .team-box,.community-box{padding:36px 24px;}
+  footer{padding:30px 20px;}
 }
-
-.menu-btn{
-display:block;
-}
-
-.hero h1{
-font-size:55px;
-}
-
-.hero p{
-font-size:18px;
-}
-
-.section-title{
-font-size:35px;
-}
-
-.logo img{
-height:55px;
-}
-
-}
-
-/* ANIMS */
-
-@keyframes fadeUp{
-
-from{
-opacity:0;
-transform:translateY(40px);
-}
-
-to{
-opacity:1;
-transform:translateY(0);
-}
-
-}
-
 </style>
 </head>
-
 <body>
 
-<!-- LOADER -->
-
 <div id="loader">
-VICEMEAIR SHOPS
+  VICEMEAIR
+  <div class="loader-bar"><div class="loader-fill"></div></div>
 </div>
 
-<!-- HEADER -->
-
-<header>
-
-<div class="logo">
-<img src="ChatGPT Image 26 mai 2026, 16_51_27.png">
-</div>
-
-<nav>
-<a href="#shop">Shop</a>
-<a href="#drop">Drop</a>
-<a href="#team">Team</a>
-<a href="https://discord.gg/KZVY36rXje" target="_blank">Discord</a>
-</nav>
-
-<div class="menu-btn">
-☰
-</div>
-
+<header id="header">
+  <div class="logo">
+    <img src="ChatGPT Image 26 mai 2026, 16_51_27.png" alt="Vicemeair">
+  </div>
+  <nav>
+    <a href="#shop">Shop</a>
+    <a href="#drop">Drop</a>
+    <a href="#team">Team</a>
+    <a href="https://discord.gg/KZVY36rXje" target="_blank">Discord</a>
+  </nav>
+  <button class="menu-btn" id="menuBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </header>
 
-<!-- HERO -->
-
-<section class="hero">
-
-<video autoplay muted loop playsinline>
-<source src="https://cdn.coverr.co/videos/coverr-skatepark-1564846949183?download=1080p" type="video/mp4">
-</video>
-
-<div class="overlay"></div>
-
-<div class="hero-content">
-
-<h1>VICEMEAIR</h1>
-
-<p>
-Freestyle Scooter Brand
-</p>
-
-<a class="btn" href="https://instagram.com/vicemeair" target="_blank">
-Commander sur Instagram
-</a>
-
+<div id="mobile-nav">
+  <a href="#shop" class="mobile-link">Shop</a>
+  <a href="#drop" class="mobile-link">Drop</a>
+  <a href="#team" class="mobile-link">Team</a>
+  <a href="https://discord.gg/KZVY36rXje" target="_blank" class="mobile-link">Discord</a>
 </div>
 
+<section class="hero">
+  <video autoplay muted loop playsinline>
+    <source src="https://cdn.coverr.co/videos/coverr-skatepark-1564846949183?download=1080p" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Freestyle Scooter Brand</div>
+    <h1>VICE<span>ME</span>AIR</h1>
+    <p>Gerland Edition &middot; 2026</p>
+    <a class="btn" href="https://instagram.com/vicemeair" target="_blank">Commander sur Instagram</a>
+  </div>
+  <div class="scroll-hint">Scroll</div>
 </section>
 
-<!-- SHOP -->
+<p class="section-title reveal" id="shop">Collection</p>
+<h2 class="section-heading reveal">SHOP</h2>
 
-<h2 class="section-title" id="shop">
-SHOP
-</h2>
+<div class="soldout-banner reveal">
+  <div class="dot"></div>
+  <div>
+    <strong>Stock &eacute;puis&eacute; sur toute la collection.</strong> Laisse ton email sur chaque produit pour &ecirc;tre notifi&eacute; du prochain drop.
+  </div>
+</div>
 
 <section class="products">
 
-<!-- TEE-SHIRT -->
-<div class="card">
+  <!-- TEE-SHIRT -->
+  <div class="card soldout reveal">
+    <div class="card-img-wrap">
+      <img src="" alt="Tee-Shirt Vicemeair">
+      <div class="soldout-overlay"><span class="soldout-badge">Sold Out</span></div>
+    </div>
+    <div class="card-content">
+      <h2>Tee-Shirt Sport</h2>
+      <p class="price">20&euro;</p>
+      <p class="card-sub success-note">Victime de leur succ&egrave;s &mdash; merci &agrave; vous !</p>
+      <a class="btn-soldout">Epuis&eacute;</a>
+      <div class="notify-wrap">
+        <input type="email" placeholder="ton@email.com" class="notify-email">
+        <button type="submit" onclick="sendNotify(this,'Tee-Shirt Sport')">Notifie-moi</button>
+      </div>
+    </div>
+  </div>
 
-<img src="">
+  <!-- GENOUILLERES -->
+  <div class="card soldout reveal">
+    <div class="card-img-wrap">
+      <img src="17825597242523431897155511830627.jpg" alt="Genouilleres REXS">
+      <div class="soldout-overlay"><span class="soldout-badge">Sold Out</span></div>
+    </div>
+    <div class="card-content">
+      <h2>Genouill&egrave;res REXS + Sticker</h2>
+      <p class="price">90&euro;</p>
+      <p class="card-sub">Paire REXS + autocollant Vicemeair offert.</p>
+      <a class="btn-soldout">Epuis&eacute;</a>
+      <div class="notify-wrap">
+        <input type="email" placeholder="ton@email.com" class="notify-email">
+        <button type="submit" onclick="sendNotify(this,'Genouilleres REXS')">Notifie-moi</button>
+      </div>
+    </div>
+  </div>
 
-<div class="card-content">
+  <!-- GRIPS -->
+  <div class="card soldout reveal">
+    <div class="card-img-wrap">
+      <img src="ChatGPT Image 21 mai 2026, 16_17_13.png" alt="Grip Freestyle">
+      <div class="soldout-overlay"><span class="soldout-badge">Sold Out</span></div>
+    </div>
+    <div class="card-content">
+      <h2>Grip Freestyle</h2>
+      <p class="price">35&euro;</p>
+      <p class="card-sub">Grip exclusif Vicemeair.</p>
+      <a class="btn-soldout">Epuis&eacute;</a>
+      <div class="notify-wrap">
+        <input type="email" placeholder="ton@email.com" class="notify-email">
+        <button type="submit" onclick="sendNotify(this,'Grip Freestyle')">Notifie-moi</button>
+      </div>
+    </div>
+  </div>
 
-<h2>Tee-Shirt sport</h2>
-
-<p class="price">20€</p>
-
-<p class="stock" style="color:red;font-weight:bold;text-decoration:line-through;">
-SOLD OUT
-</p>
-
-<p style="color:#AFFF00;margin-bottom:15px;">
-Victime de leur succès 🔥
-</p>
-
-<a class="btn" style="background:gray;pointer-events:none;">
-Épuisé
-</a>
-
-</div>
-</div>
-
-<!-- GENOUILLÈRES -->
-<div class="card">
-
-<img src="17825597242523431897155511830627.jpg">
-
-<div class="card-content">
-
-<h2>Genouillères REXS + Sticker Vicemeair</h2>
-
-<p class="price">90€</p>
-
-<p class="stock" style="color:red;font-weight:bold;text-decoration:line-through;">
-SOLD OUT
-</p>
-
-<p style="color:#AFFF00;margin-bottom:15px;">
-Comprend une paire de genouillères REXS et un autocollant Vicemeair offert.
-</p>
-
-<a class="btn" style="background:gray;pointer-events:none;">
-Épuisé
-</a>
-
-</div>
-
-</div>
-
-<!-- GRIPS -->
-<div class="card">
-
-<img src="ChatGPT Image 21 mai 2026, 16_17_13.png">
-
-<div class="card-content">
-
-<h2>Grip Freestyle</h2>
-
-<p class="price">35€</p>
-
-<p class="stock" style="color:red;font-weight:bold;text-decoration:line-through;">
-SOLD OUT
-</p>
-
-<a class="btn" style="background:gray;pointer-events:none;">
-Épuisé
-</a>
-
-</div>
-</div>
-
-<!-- AUTOCOLLANTS -->
-<div class="card">
-
-<img src="ChatGPT Image 21 mai 2026, 16_12_43.png">
-
-<div class="card-content">
-
-<h2>Autocollants</h2>
-
-<p class="price">1€</p>
-
-<p class="stock" style="color:red;font-weight:bold;text-decoration:line-through;">
-SOLD OUT
-</p>
-
-<a class="btn" style="background:gray;pointer-events:none;">
-Épuisé
-</a>
-
-</div>
-</div>
+  <!-- AUTOCOLLANTS -->
+  <div class="card reveal">
+    <div class="card-img-wrap">
+      <img src="ChatGPT Image 21 mai 2026, 16_12_43.png" alt="Autocollants Vicemeair">
+    </div>
+    <div class="card-content">
+      <h2>Autocollants</h2>
+      <p class="price">1&euro;</p>
+      <p class="card-sub" style="color:#ff9900;">⚡ Plus que 3 disponibles — 2 achet&eacute;s = 1 offert.</p>
+      <a class="btn" href="https://instagram.com/vicemeair" target="_blank">Commander</a>
+    </div>
+  </div>
 
 </section>
 
-<!-- DROP -->
-
-
-</h2>
-
-<div class="drop-box">
-
-<p>
-
-</p>
-
-<br>
-
-<p>
-Street • Park • Flat
-</p>
-
+<p class="section-title reveal" id="drop">Edition limit&eacute;e</p>
+<h2 class="section-heading reveal">DROP GERLAND</h2>
+<div class="drop-section reveal">
+  <div class="drop-box">
+    <h3>Collection Gerland</h3>
+    <p>Inspir&eacute;e des sessions indoor de Gerland &mdash; une collection locale, limit&eacute;e, authentique.</p>
+    <div class="drop-tags">
+      <span class="drop-tag">Street</span>
+      <span class="drop-tag">Park</span>
+      <span class="drop-tag">Flat</span>
+    </div>
+  </div>
 </div>
 
-<!-- TEAM -->
-
-<section class="team" id="team">
-
-<h2 class="section-title">
-TEAM
-</h2>
-
-<div class="team-box">
-
-<div class="riders">
-
-<div class="rider">
-<h3>Emey</h3>
-<p>Rider Park</p>
-</div>
-
-<div class="rider">
-<h3>Victor</h3>
-<p>Rider Street</p>
-</div>
-
-<div class="rider">
-<h3>Raphaël</h3>
-<p>Rider polyvalent</p>
-</div>
-
-<div class="rider">
-<h3>eliot</h3>
-<p>pro des 360</p>
-</div>
-
-</div>
-
-</div>
-
+<section class="team-section" id="team">
+  <p class="section-title reveal">Les riders</p>
+  <h2 class="section-heading reveal">TEAM</h2>
+  <div class="team-box reveal">
+    <div class="riders">
+      <div class="rider">
+        <div class="rider-avatar">E</div>
+        <h3>Emey</h3><p>Rider Park</p>
+      </div>
+      <div class="rider">
+        <div class="rider-avatar">V</div>
+        <h3>Victor</h3><p>Rider Street</p>
+      </div>
+      <div class="rider">
+        <div class="rider-avatar">R</div>
+        <h3>Rapha&euml;l</h3><p>Rider polyvalent</p>
+      </div>
+      <div class="rider">
+        <div class="rider-avatar">EL</div>
+        <h3>Eliot</h3><p>Pro des 360</p>
+      </div>
+    </div>
+  </div>
 </section>
-<section class="team">
 
-<h2 class="section-title">
-COMMUNAUTÉ
-</h2>
-
-<div class="team-box">
-
-<h3>Discord Vicemeair HQ</h3>
-
-<br>
-
-<p>
-Rejoins la communauté Vicemeair pour parler trott freestyle,
-partager tes tricks, tes clips et discuter Park, Street et Flat.
-</p>
-
-<br>
-
-<a class="btn" href="https://discord.gg/KZVY36rXje" target="_blank">
-Rejoindre le Discord
-</a>
-
-</div>
-
+<section class="team-section">
+  <p class="section-title reveal">Rejoins-nous</p>
+  <h2 class="section-heading reveal">COMMUNAUT&Eacute;</h2>
+  <div class="community-box reveal">
+    <h3>Discord Vicemeair HQ</h3>
+    <p>Parle trott freestyle, partage tes tricks et tes clips, et discute Park, Street et Flat avec la crew.</p>
+    <a class="btn" href="https://discord.gg/KZVY36rXje" target="_blank">Rejoindre le Discord</a>
+  </div>
 </section>
 
 <footer>
-
-© 2026 VICEMEAIR 
-
+  <span>&copy; 2026 VICEMEAIR &middot; GERLAND EDITION</span>
+  <br><br>
+  Fait avec passion &agrave; Lyon
 </footer>
 
+<script>
+window.addEventListener('scroll',function(){
+  document.getElementById('header').classList.toggle('scrolled',window.scrollY>60);
+});
+
+var menuBtn=document.getElementById('menuBtn');
+var mobileNav=document.getElementById('mobile-nav');
+menuBtn.addEventListener('click',function(){
+  menuBtn.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+  document.body.style.overflow=mobileNav.classList.contains('open')?'hidden':'';
+});
+document.querySelectorAll('.mobile-link').forEach(function(a){
+  a.addEventListener('click',function(){
+    menuBtn.classList.remove('open');
+    mobileNav.classList.remove('open');
+    document.body.style.overflow='';
+  });
+});
+
+var observer=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}
+  });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(function(el){observer.observe(el);});
+
+function sendNotify(btn, produit) {
+  var input = btn.previousElementSibling;
+  var email = input.value.trim();
+  if (!email || email.indexOf('@') === -1) {
+    input.style.borderColor = '#ff4d4d';
+    setTimeout(function(){ input.style.borderColor = ''; }, 1500);
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = '...';
+  fetch('https://formspree.io/f/mjgqogbl', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ email: email, produit: produit, message: 'Notification stock demandee pour : ' + produit })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    if (data.ok || data.next) {
+      btn.textContent = 'OK !';
+      btn.style.background = '#1a1a1a';
+      btn.style.color = '#AFFF00';
+      btn.style.border = '1px solid #AFFF00';
+      input.disabled = true;
+      input.value = '';
+      input.placeholder = 'On te previent au prochain drop !';
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Erreur, retry';
+    }
+  })
+  .catch(function(){
+    btn.disabled = false;
+    btn.textContent = 'Erreur, retry';
+  });
+}
+</script>
 </body>
 </html>
